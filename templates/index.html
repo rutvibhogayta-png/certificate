@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Certificate Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Great+Vibes&family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body>
+<div class="app">
+ <div class="panel" id="form">
+  <h1>Certificate Studio</h1>
+  <p class="sub">Design once, generate for every recipient.</p>
+
+  <h2 style="border:0;margin-top:10px;padding:0">Style</h2>
+  <div class="vibes" id="vibes"></div>
+
+  <h2>Logo</h2>
+  <input type="file" id="logo" accept="image/*">
+  <label>Logo position</label>
+  <div class="seg" id="lalign"><button data-v="flex-start">Left</button><button data-v="center" class="on">Center</button><button data-v="flex-end">Right</button></div>
+  <label>Logo size <span id="lsv">90</span>px</label>
+  <input type="range" id="lsize" min="40" max="160" value="90" style="width:100%">
+
+  <h2>Content</h2>
+  <label>Organisation / event</label>
+  <input type="text" id="org" value="Global Leadership Summit 2026">
+  <label>Certificate title</label>
+  <input type="text" id="title" value="Certificate of Achievement">
+  <label>Line above the name</label>
+  <input type="text" id="pre" value="This certificate is proudly presented to">
+  <label>Description</label>
+  <textarea id="body">in recognition of outstanding contribution and dedication, demonstrated with excellence throughout the programme.</textarea>
+  <div class="row">
+   <div><label>Date</label><input type="date" id="date"></div>
+   <div><label>Place</label><input type="text" id="place" placeholder="e.g. Vadodara"></div>
+  </div>
+
+  <h2>Recipients</h2>
+  <label>Separate names with</label>
+  <select id="sep">
+   <option value="comma">Comma or new line (full names allowed)</option>
+   <option value="space">Space (one word per name)</option>
+  </select>
+  <label>Names</label>
+  <textarea id="names">Aarav Sharma, Priya Patel, Rohan Mehta</textarea>
+  <p class="sub" id="ncount"></p>
+
+  <h2>Signatories</h2>
+  <label>How many signatories?</label>
+  <input type="number" id="scount" min="0" max="6" value="2">
+  <div id="sigs"></div>
+ </div>
+
+ <div class="panel">
+  <div class="bar">
+   <button class="btn ghost" id="prev" aria-label="Previous">&#8592;</button>
+   <span id="pos">1 / 1</span>
+   <button class="btn ghost" id="next" aria-label="Next">&#8594;</button>
+   <span class="sp"></span>
+   <button class="btn" id="printBtn">Print / Save all as PDF</button>
+  </div>
+  <div id="stage"><div id="cw"></div></div>
+  <p class="sub" style="margin-top:10px">In the print dialog choose “Save as PDF”, paper A4, landscape, margins none, and turn on background graphics. Each recipient gets one page.</p>
+ </div>
+</div>
+<form id="printForm" method="post" action="/print" target="_blank" hidden><input type="hidden" name="data" id="payload"></form>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body></html>

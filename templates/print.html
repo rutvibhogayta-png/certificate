@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Certificates</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Great+Vibes&family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body>
+<p class="note">Choose <b>Save as PDF</b>, paper A4 landscape, margins none, background graphics on. {{ names|length }} page(s).</p>
+<div id="sheet">
+{% for n in names %}
+<div class="cert" data-v="{{ d.vibe }}" style="--lh:{{ d.lsize }}px">
+ <div class="frame"></div><div class="frame2"></div>
+ <div class="in">
+  <div class="logo" style="justify-content:{{ d.lalign }}">{% if d.logo %}<img src="{{ d.logo }}" alt="Logo">{% endif %}</div>
+  <div class="org">{{ d.org }}</div>
+  <div class="title">{{ d.title }}</div>
+  <div class="pre">{{ d.pre }}</div>
+  <div class="name">{{ n }}</div>
+  <div class="body">{{ d.body }}</div>
+  <div class="meta">{{ meta }}</div>
+  <div class="sigs">
+   {% for s in d.sigs %}<div class="sg">{% if s.img %}<img src="{{ s.img }}" alt="">{% else %}<div style="height:54px"></div>{% endif %}
+    <div class="ln">{{ s.name or "Name" }}</div><div class="ds">{{ s.des }}</div></div>{% endfor %}
+  </div>
+ </div>
+</div>
+{% endfor %}
+</div>
+<script>document.fonts.ready.then(()=>setTimeout(()=>window.print(),400))</script>
+</body></html>
