@@ -3,8 +3,16 @@ const VIBES=[["classic","Classic Gold","linear-gradient(90deg,#fbf6e9,#b58a25)"]
 const S={vibe:"classic",lalign:"center",logo:"",sigs:[],idx:0};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const readImg=(f,cb)=>{if(!f)return;const fd=new FormData();fd.append("file",f);
- fetch("/upload",{method:"POST",body:fd}).then(r=>r.json()).then(j=>j.url?cb(j.url):alert(j.error)).catch(()=>alert("Upload failed"))};
+// Read uploads in the browser instead of writing them to Vercel's temporary filesystem.
+// Data URLs travel with the certificate payload and work for preview and print/export.
+const readImg=(f,cb)=>{
+ if(!f)return;
+ if(!f.type || !f.type.startsWith("image/")){alert("Please select an image file.");return;}
+ const reader=new FileReader();
+ reader.onload=()=>{if(typeof reader.result==="string")cb(reader.result);else alert("Could not read this image. Please try another file.");};
+ reader.onerror=()=>alert("Could not read this image. Please try another file.");
+ reader.readAsDataURL(f);
+};
 
 $("vibes").innerHTML=VIBES.map(v=>`<button class="vibe" data-v="${v[0]}"><i style="background:${v[2]};border:1px solid var(--line)"></i>${v[1]}</button>`).join("");
 $("vibes").onclick=e=>{const b=e.target.closest(".vibe");if(!b)return;S.vibe=b.dataset.v;render()};

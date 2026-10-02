@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import Flask, render_template, request, jsonify, abort
 
 app = Flask(__name__)
-app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024  # 8 MB per request
+app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024  # allow certificate payloads with embedded images
 UPLOAD_DIR = os.path.join(app.static_folder, "uploads")
 ALLOWED = {"png", "jpg", "jpeg", "webp", "gif"}
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -36,13 +36,22 @@ def print_view():
     if d.get("lalign") not in {"flex-start", "center", "flex-end"}:
         d["lalign"] = "center"
     d["lsize"] = max(40, min(160, int(d.get("lsize") or 90)))
-    for k in ("logo",):  # only allow our own uploaded files
-        if d.get(k) and not d[k].startswith("/static/uploads/"):
-            d[k] = ""
-    d["sigs"] = [s for s in d.get("sigs", [])][:6]
-    for s in d["sigs"]:
-        if s.get("img") and not s["img"].startswith("/static/uploads/"):
-            s["img"] = ""
+    # Images are embedded as browser-generated data URLs. This avoids relying on
+    # persistent local disk, which is not available to Vercel serverless functions.
+    def safe_image(value):
+        if not isinstance(value, str):
+            return ""
+        if value.startswith("data:image/") and ";base64," in value[:80]:
+            return value
+        # Keep compatibility with images uploaded by the older local version.
+        if value.startswith("/static/uploads/"):
+            return value
+        return ""
+
+    d["logo"] = safe_image(d.get("logo", ""))
+    d["sigs"] = [s for s in d.get("sigs", []) if isinstance(s, dict)][:6]
+    for sig in d["sigs"]:
+        sig["img"] = safe_image(sig.get("img", ""))
     date = ""
     if d.get("date"):
         dt = datetime.strptime(d["date"], "%Y-%m-%d")
